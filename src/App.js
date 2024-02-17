@@ -1,6 +1,7 @@
 import { useCallback, useState } from "react";
 import { FaPlus, FaTrash } from "react-icons/fa";
 import Modal from "react-modal";
+import { useParams, useSearchParams } from "react-router-dom";
 import ReactFlow, {
   Position,
   addEdge,
@@ -35,7 +36,7 @@ const TouchDeviceFlow = () => {
                   setIsOpen(true);
                 }}
               >
-                <FaPlus />
+                <FaPlus size={10} />
               </div>
               {/* <div  onClick={() => {}}>
                 <FaTrash />
@@ -50,6 +51,7 @@ const TouchDeviceFlow = () => {
       forceToolbarVisible: true,
     },
   ];
+  const [queryParameters] = useSearchParams();
 
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [currentNode, setCurrentNode] = useNodesState(null);
@@ -59,6 +61,9 @@ const TouchDeviceFlow = () => {
   const onConnect = useCallback((connection) => {
     setEdges((eds) => addEdge(connection, eds));
   }, []);
+
+  const userId = queryParameters.get("userId");
+  console.log(userId);
 
   const onSubmit = () => {
     const id = uuid();
@@ -85,7 +90,7 @@ const TouchDeviceFlow = () => {
                     setIsOpen(true);
                   }}
                 >
-                  <FaPlus />
+                  <FaPlus size={10} />
                 </div>
                 <div
                   style={{ cursor: "pointer", marginLeft: "5px" }}
@@ -93,7 +98,7 @@ const TouchDeviceFlow = () => {
                     onDeleteNode(id);
                   }}
                 >
-                  <FaTrash />
+                  <FaTrash size={10} />
                 </div>
               </div>
             </div>
