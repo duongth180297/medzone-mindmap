@@ -2,12 +2,13 @@
 // import { BASE_URL } from "app-constants/Constants";
 import axios from "axios";
 // import { notifyError } from "components/Notification/Notification";
-import { getSecretKey } from "./helpers/storage";
+import { getSecretKey } from "../helpers/storage";
 // import { startLoading, stopLoading } from "redux/common/actions";
 // import { store } from "redux/store";
 
 let activeRequest = 0;
 let countShowExpiredLogin = 0;
+const BASE_URL = "https://apitest.medzone.vn";
 
 function transformInToFormObject(data) {
   let formData = new FormData();
@@ -41,7 +42,7 @@ const axiosConfig = {
 
 const apiClient = axios.create({
   ...axiosConfig,
-  baseURL: "http://apitest.medzone.vn",
+  baseURL: BASE_URL,
 });
 
 // const hideLoading = (axiosObj) => {
@@ -63,9 +64,6 @@ export const setupInterceptors = (history) => {
 
       if (getSecretKey()) {
         config.headers["secret_key"] = getSecretKey();
-        config.headers["user_id"] =  1;
-        // config.headers["secret_key"] = getSecretKey();
-        // config.headers["apisecret"] = getSecretKey(); // prod
       }
       if (config?.data) {
         config.data = transformInToFormObject(config.data);

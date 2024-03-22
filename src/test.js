@@ -68,18 +68,20 @@ const TouchDeviceFlow = () => {
     setEdges((eds) => addEdge(connection, eds));
   }, []);
 
-  const userId = queryParameters.get("userId") ?? 1;
-  const id = queryParameters.get("id") ?? 1;
-  const uuidMindMap = queryParameters.get("uuid") ?? "6e822e7b-e672-4bff-97b9-1480ed118453";
-  const data_node = queryParameters.get("data_node");
-  const data_edge = queryParameters.get("data_edge");
+  const userId = "1"; //queryParameters.get("userId");
+  const id = "1"; //queryParameters.get("id");
+  const uuidMindMap = "6e822e7b-e672-4bff-97b9-1480ed118453"; //queryParameters.get("uuid");
 
   useEffect(() => {
-    const node = CircularJSON.parse(data_node) || [];
-    const edge = CircularJSON.parse(data_edge) || [];
-    setNodes(node);
+    const node = CircularJSON.parse(getNode());
+    const edge = CircularJSON.parse(getEdge());
+    // setNodes(node);
     setEdges(edge);
 
+    // setEdges(edge)
+    // if (node) {
+    //   setNodes(node);
+    // }
     console.log(node);
     console.log(edges);
   }, []);
@@ -92,10 +94,39 @@ const TouchDeviceFlow = () => {
       {
         id: id,
         data: {
-          label: nameNode,
+          label: (
+            <div>
+              <div>{nameNode}</div>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  marginTop: "2px",
+                }}
+              >
+                <div
+                  style={{ cursor: "pointer", marginRight: "5px" }}
+                  onClick={() => {
+                    setCurrentNode(id);
+                    setIsOpen(true);
+                  }}
+                >
+                  <FaPlus size={10} />
+                </div>
+                <div
+                  style={{ cursor: "pointer", marginLeft: "5px" }}
+                  onClick={() => {
+                    onDeleteNode(id);
+                  }}
+                >
+                  <FaTrash size={10} />
+                </div>
+              </div>
+            </div>
+          ),
         },
         position: {
-          x: 100 + Math.floor(Math.random() * 130),
+          x: 300 + Math.floor(Math.random() * 130),
           y: 100 + Math.floor(Math.random() * 100),
         },
         sourcePosition: Position.Right,
@@ -125,105 +156,64 @@ const TouchDeviceFlow = () => {
   };
 
   const saveNode = () => {
-    setNode(CircularJSON.stringify(nodes));
-    setEdge(CircularJSON.stringify(edges));
-    if (uuidMindMap && id) {
-      apiClient.post(
-        "/api/user-mind-map/update",
-        {
-          data_node: CircularJSON.stringify(nodes),
-          data_edge: CircularJSON.stringify(nodes),
-          id: id,
-        },
-        {
-          headers: {
-            uuid: uuidMindMap,
-            user_id: userId,
-          },
-        }
-      );
-      return;
-    }
-    apiClient.post(
-      "/api/user-mind-map/create",
-      {
-        data_node: CircularJSON.stringify(nodes),
-        data_edge: CircularJSON.stringify(nodes),
-      },
-      {
-        headers: {
-          user_id: userId,
-        },
-      }
-    );
+    console.log(edges);
+    // console.log(JSON.stringify(nodes));
+    // console.log(edges);
+    // setNode(CircularJSON.stringify(nodes));
+    // setEdge(CircularJSON.stringify(edges));
+    // console.log(CircularJSON.stringify(nodes));
+    // console.log(getNode());
+    // if (uuidMindMap && id) {
+    //   apiClient.post(
+    //     "/api/user-mind-map/update",
+    //     {
+    //       data_node: CircularJSON.stringify(nodes),
+    //       data_edge: CircularJSON.stringify(nodes),
+    //       id: id,
+    //     },
+    //     {
+    //       headers: {
+    //         uuid: uuidMindMap,
+    //         user_id: userId,
+    //       },
+    //     }
+    //   );
+    //   return;
+    // }
+    // apiClient.post(
+    //   "/api/user-mind-map/create",
+    //   {
+    //     data_node: CircularJSON.stringify(nodes),
+    //     data_edge: CircularJSON.stringify(nodes),
+    //   },
+    //   {
+    //     headers: {
+    //       user_id: userId,
+    //     },
+    //   }
+    // );
   };
-
-  useEffect(() => {
-    if (nodes && nodes?.length) {
-      const nod = nodes.map((item) => {
-        return {
-          ...item,
-          data: {
-            label: (
-              <div>
-                <div>{item.data.label}</div>
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    marginTop: "2px",
-                  }}
-                >
-                  <div
-                    style={{ cursor: "pointer", marginRight: "5px" }}
-                    onClick={() => {
-                      setCurrentNode(item.id);
-                      setIsOpen(true);
-                    }}
-                  >
-                    <FaPlus size={10} />
-                  </div>
-                  <div
-                    style={{ cursor: "pointer", marginLeft: "5px" }}
-                    onClick={() => {
-                      onDeleteNode(item.id);
-                    }}
-                  >
-                    <FaTrash size={10} />
-                  </div>
-                </div>
-              </div>
-            ),
-          },
-        };
-      });
-      setNodeCustom(nod);
-    }
-  }, [nodes]);
-
   return (
     <>
-      <div style={{ background: "red", width: "100px", height: "50px", textAlign: 'center',textAlignVertical: "center", }} onClick={saveNode}>
+      <div style={{ background: "red", width: "200px" }} onClick={saveNode}>
         Cập nhật
       </div>
-      {nodeCustom?.length ? (
-        <ReactFlow
-          nodes={nodeCustom}
-          edges={edges}
-          onConnect={onConnect}
-          onNodesChange={onNodesChange}
-          onEdgesChange={onEdgesChange}
-          className="touchdevice-flow"
-          fitView
-          // onNodeClick={(e, node) => {
-          //   setCurrentNode(node);
-          //   setIsOpen(true);
-          // }}
-          // onNodesDelete={(node) => {
-          //   onDeleteNode(node);
-          // }}
-        />
-      ) : null}
+      <ReactFlow
+        nodes={nodes}
+        edges={edges}
+        onConnect={onConnect}
+        onNodesChange={onNodesChange}
+        onEdgesChange={onEdgesChange}
+        className="touchdevice-flow"
+        fitView
+        // onNodeClick={(e, node) => {
+        //   setCurrentNode(node);
+        //   setIsOpen(true);
+        // }}
+        // onNodesDelete={(node) => {
+        //   onDeleteNode(node);
+        // }}
+      />
 
       <Modal isOpen={isOpen} onRequestClose={() => setIsOpen(false)} ƒ>
         <div style={{ display: "flex", justifyContent: "center" }}>
